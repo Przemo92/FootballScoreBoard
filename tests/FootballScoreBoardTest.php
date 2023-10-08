@@ -54,4 +54,21 @@ class FootballScoreBoardTest extends TestCase
         $this->assertSame(2, $game->getHomeScore());
         $this->assertSame(1, $game->getAwayScore());
     }
+
+    /**
+     * @throws ReflectionException
+     */
+    public function testCheckGameOnLive(): void
+    {
+        $method = new ReflectionMethod(FootballScoreBoard::class, 'checkGameOnLive');
+        $method->setAccessible(true);
+
+        $homeTeam = "Mexico";
+        $awayTeam = "Canada";
+        $this->scoreBoard->startGame($homeTeam, $awayTeam);
+        $result = $method->invoke($this->scoreBoard, $homeTeam, $awayTeam);
+
+        $this->assertSame($homeTeam, $result->getHomeTeam()->getName());
+        $this->assertSame($awayTeam, $result->getAwayTeam()->getName());
+    }
 }
