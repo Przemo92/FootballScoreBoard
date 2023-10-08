@@ -40,4 +40,19 @@ class FootballScoreBoard
         }
         return false;
     }
+
+    public function updateScore($homeTeamName, $awayTeamName, $homeScore, $awayScore): bool
+    {
+        foreach ($this->games as $game) {
+            $homeTeam = $game->getHomeTeam()->getName();
+            $awayTeam = $game->getAwayTeam()->getName();
+
+            if ($homeTeam === $homeTeamName && $awayTeam === $awayTeamName) {
+                $game->setHomeScore($homeScore);
+                $game->setAwayScore($awayScore);
+                return true;
+            }
+        }
+        return false;
+    }
 }

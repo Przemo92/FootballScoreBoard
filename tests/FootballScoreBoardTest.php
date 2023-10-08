@@ -39,4 +39,19 @@ class FootballScoreBoardTest extends TestCase
         $games = $this->scoreBoard->getGames();
         $this->assertCount(1, $games);
     }
+
+    public function testUpdateScore(): void
+    {
+        $this->scoreBoard->startGame("Mexico", "Canada");
+        $isUpdated = $this->scoreBoard->updateScore("Mexico", "Canada", 2, 1);
+        $isNotUpdated = $this->scoreBoard->updateScore("Mexico", "Brazil", 2, 1);
+
+        $games = $this->scoreBoard->getGames();
+        $game = $games[0];
+
+        $this->assertTrue($isUpdated);
+        $this->assertFalse($isNotUpdated);
+        $this->assertSame(2, $game->getHomeScore());
+        $this->assertSame(1, $game->getAwayScore());
+    }
 }
