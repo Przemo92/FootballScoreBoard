@@ -10,7 +10,6 @@ class FootballScoreBoardTest extends TestCase
 
     protected function setUp(): void
     {
-        // Create a new FootballScoreBoard instance before each test
         $this->scoreBoard = new FootballScoreBoard();
     }
     public function testStartGame(): void
@@ -28,6 +27,16 @@ class FootballScoreBoardTest extends TestCase
         $this->assertSame("Canada", $game->getAwayTeam()->getName());
         $this->assertSame(Game::START_GAME_SCORE, $game->getHomeScore());
         $this->assertSame(Game::START_GAME_SCORE, $game->getAwayScore());
+    }
 
+    public function testFinishGame(): void
+    {
+        $this->scoreBoard->startGame("Mexico", "Canada");
+        $this->scoreBoard->startGame("Spain", "Brazil");
+
+        $this->assertTrue($this->scoreBoard->finishGame("Mexico", "Canada"));
+
+        $games = $this->scoreBoard->getGames();
+        $this->assertCount(1, $games);
     }
 }

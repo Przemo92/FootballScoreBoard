@@ -25,4 +25,19 @@ class FootballScoreBoard
         $this->games[] = $newGame;
         return true;
     }
+
+    public function finishGame($homeTeamName, $awayTeamName): bool
+    {
+        foreach ($this->games as $key => $game) {
+            $homeTeam = $game->getHomeTeam()->getName();
+            $awayTeam = $game->getAwayTeam()->getName();
+
+            if ($homeTeam === $homeTeamName && $awayTeam === $awayTeamName) {
+                unset($this->games[$key]);
+                $this->games = array_values($this->games);
+                return true;
+            }
+        }
+        return false;
+    }
 }
