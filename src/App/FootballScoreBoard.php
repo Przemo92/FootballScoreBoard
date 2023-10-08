@@ -58,6 +58,17 @@ class FootballScoreBoard implements ScoreBoardInterface
         return false;
     }
 
+    public function getSummary(): array
+    {
+        $this->sortGamesBySumOfScores();
+        $summary = [];
+        foreach ($this->games as $game) {
+            $summary[] = "{$game->getHomeTeam()->getName()} {$game->getHomeScore()} - {$game->getAwayScore()} {$game->getAwayTeam()->getName()}";
+        }
+
+        return $summary;
+    }
+
     private function checkGameOnLive(string $homeTeam, string $awayTeam)
     {
         foreach ($this->games as $game) {
@@ -68,5 +79,19 @@ class FootballScoreBoard implements ScoreBoardInterface
             }
         }
         return null;
+    }
+
+    private function sortGamesBySumOfScores(): void
+    {
+        usort($this->games, function ($a, $b) {
+            // Sort games by total score in descending order
+            $totalScoreA = $a->getHomeScore() + $a->getAwayScore();
+            $totalScoreB = $b->getHomeScore() + $b->getAwayScore();
+            if ($totalScoreA === $totalScoreB) {
+                // If total scores are the same, sort by the order they were added
+                return array_search($a, $this->games) < array_search($b, $this->games) ? 1 : -1;
+            }
+            return $totalScoreB - $totalScoreA;
+        });
     }
 }

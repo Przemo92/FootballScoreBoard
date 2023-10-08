@@ -55,13 +55,35 @@ class FootballScoreBoardTest extends TestCase
         $this->assertSame(1, $game->getAwayScore());
     }
 
+    public function testGetSummary(): void
+    {
+        $this->scoreBoard->startGame("Mexico", "Canada");
+        $this->scoreBoard->startGame("Spain", "Brazil");
+        $this->scoreBoard->startGame("Germany", "France");
+        $this->scoreBoard->startGame("Uruguay", "Italy");
+        $this->scoreBoard->startGame("Argentina", "Australia");
+
+        $this->scoreBoard->updateScore("Mexico", "Canada", 0, 5);
+        $this->scoreBoard->updateScore("Spain", "Brazil", 10, 2);
+        $this->scoreBoard->updateScore("Germany", "France", 2, 2);
+        $this->scoreBoard->updateScore("Uruguay", "Italy", 6, 6);
+        $this->scoreBoard->updateScore("Argentina", "Australia", 3, 1);
+
+        $summary = $this->scoreBoard->getSummary();
+
+        $this->assertSame("Uruguay 6 - 6 Italy", $summary[0]);
+        $this->assertSame("Spain 10 - 2 Brazil", $summary[1]);
+        $this->assertSame("Mexico 0 - 5 Canada", $summary[2]);
+        $this->assertSame("Argentina 3 - 1 Australia", $summary[3]);
+        $this->assertSame("Germany 2 - 2 France", $summary[4]);
+    }
+
     /**
      * @throws ReflectionException
      */
     public function testCheckGameOnLive(): void
     {
         $method = new ReflectionMethod(FootballScoreBoard::class, 'checkGameOnLive');
-        $method->setAccessible(true);
 
         $homeTeam = "Mexico";
         $awayTeam = "Canada";
@@ -70,5 +92,23 @@ class FootballScoreBoardTest extends TestCase
 
         $this->assertSame($homeTeam, $result->getHomeTeam()->getName());
         $this->assertSame($awayTeam, $result->getAwayTeam()->getName());
+    }
+
+    /**
+     * @throws ReflectionException
+     */
+    public function testSortGamesBySumOfScores()
+    {
+        $this->scoreBoard->startGame("Mexico", "Canada");
+        $this->scoreBoard->startGame("Spain", "Brazil");
+        $this->scoreBoard->updateScore("Mexico", "Canada", 0, 5);
+        $this->scoreBoard->updateScore("Spain", "Brazil", 10, 2);
+
+        $method = new ReflectionMethod(FootballScoreBoard::class, 'sortGamesBySumOfScores');
+        $method->invoke($this->scoreBoard);
+        $games = $this->scoreBoard->getGames();
+
+        $this->assertSame("Spain", $games[0]->getHomeTeam()->getName());
+        $this->assertSame("Brazil", $games[0]->getAwayTeam()->getName());
     }
 }
